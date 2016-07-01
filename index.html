@@ -22,11 +22,12 @@
       function initMap() {
         var theirLatLng = {lat: -25.363, lng: 131.044};
 		
-		// Create a Victoria marker.
+		// Store the location of Lighthouse Labs.
 		var lighthouseLabsLatLong = {lat: 49.2819198, lng: -123.1105061};
 		
+		// Render the map.
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 10,
+          zoom: 10, // Increased zoom to street-level.
           center: lighthouseLabsLatLong
         });
 
@@ -36,6 +37,7 @@
           title: 'Hello World!'
         });
 		
+		// Create a marker that points to Lighthouse Labs.
 		var myMarker = new google.maps.Marker({
           position: lighthouseLabsLatLong,
 		  draggable: true,
