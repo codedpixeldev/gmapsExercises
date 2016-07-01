@@ -26,8 +26,10 @@
       // This example displays a marker at the center of Australia.
       // When the user clicks the marker, an info window opens.
 	  
+	  var CONSUMER_KEY = 'Z09OhExYy7qZn4GXJa02F2obGKmw3IZFg4oyKqke';
 	  var marker;
 	  var cineplexMarker;
+	  var map;
 	  
       function initMap() {
         
@@ -35,10 +37,18 @@
 		var sookePosition = {lat: 48.3742575, lng: -123.7432158};
 		
 		// Create and store a Google Map object and set the initial location.
-        var map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(document.getElementById('map'), {
           zoom: 10,
           center: sookePosition
         });
+		
+		//map events
+		map.addListener('center_changed', function () {
+			getPhotos();
+		});
+		
+		//on load
+		getPhotos();
 		
 		// Set User Geolocation
 		
@@ -118,7 +128,7 @@
 		  
           cineplexInfo.open(map, cineplexMarker);
         });
-      }
+	}
 	  
 	  // Wait until dom has rendered before attempting to access dom elements.
 	  $( document ).ready(function() {
@@ -149,6 +159,38 @@
                               'Error: The Geolocation service failed.' :
                               'Error: Your browser doesn\'t support geolocation.');
       }
+	  
+	  function getPhotos() {
+		var mapCenter = '' + map.getCenter().lat() + ',' + map.getCenter().lng() + ',2km';
+		var url = 'https://api.500px.com/v1/photos/search?geo='+mapCenter+'&consumer_key='+CONSUMER_KEY;
+
+		$.getJSON(url, function(data) {
+		  $.each(data.photos, function(key, value) {
+			setPhotoMarkers(value)
+		  });
+		});
+
+	  };
+
+	  function setPhotoMarkers(photo) {
+	    var myLatLng = {lat: photo.latitude, lng: photo.longitude};
+		var title = photo.name;
+		var thumbnail = "<div><img src="+photo.image_url+"</div>"
+		var marker = new google.maps.Marker({
+		  position: myLatLng,
+		  title: title,
+		  map:map,
+		  infoWindow: {
+			content: thumbnail
+		  }
+		});
+
+		marker.addListener('click', function () {
+		  infoWindow.open(map, marker);
+
+		});
+
+	  };
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAtwJBGUujlOJOfiC4g87GpZ5J4s7zotGs&callback=initMap">
